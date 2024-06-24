@@ -5,7 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/HUD/AuraHUD.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -37,7 +39,19 @@ void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
 	check(AuraPlayerState);
+	 
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState,this);
+
+	//AAuraPlayerController* AuraPlayerController =Cast<AAuraPlayerController>(AuraPlayerState->GetPlayerController());
+	//在多人游戏中，本地客户端只有自己的PlayerController，但是对于其它玩家角色，没有有效的PlayerController，所以如果使用Check的话，那么游戏就
+	//不能进行下去了
+	if(AAuraPlayerController* AuraPlayerController =Cast<AAuraPlayerController>(GetController()))
+	{
+		if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+		{
+			AuraHUD->InitOverlay(AuraPlayerController,AuraPlayerState,AbilitySystemComponent,AttributeSet);
+		}
+	}
 }
