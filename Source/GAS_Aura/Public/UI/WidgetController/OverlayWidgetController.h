@@ -35,8 +35,5 @@ public:
 	FOnMaxManaChangedSignature OnMaxManaChanged;
 
 protected:
-	void HealthChanged(const FOnAttributeChangeData& Data);
-	void MaxHealthChanged(const FOnAttributeChangeData& Data);
-	void ManaChanged(const FOnAttributeChangeData& Data);
-	void MaxManaChanged(const FOnAttributeChangeData& Data);
+	
 };

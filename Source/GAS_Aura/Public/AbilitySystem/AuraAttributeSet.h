@@ -13,7 +13,39 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+USTRUCT(BlueprintType)
+struct FEffectProperties
+{
+	GENERATED_BODY()
 
+	FEffectProperties(){}
+	
+	FGameplayEffectContextHandle EffectContextHandle;
+	
+	UPROPERTY(VisibleAnywhere)
+	UAbilitySystemComponent* SourceASC = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	AActor* SourceAvatarActor = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	AController* SourceController = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	ACharacter* SourceCharacter = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UAbilitySystemComponent* TargetASC = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	AActor* TargetAvatarActor = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	AController* TargetController = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	ACharacter* TargetCharacter = nullptr;
+};
 
 /**
  * 
@@ -25,6 +57,8 @@ class GAS_AURA_API UAuraAttributeSet : public UAttributeSet
 public:
 	UAuraAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
 
 	//属性应该放在public中，方便调用
@@ -43,8 +77,8 @@ public:
 	UPROPERTY(BlueprintReadOnly,ReplicatedUsing = OnRep_MaxMana,Category = "Vital Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet,MaxMana);
-	
 
+protected:
 	//必须加UFUNCTION()，否则ReplicatedUsing识别不到
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -57,4 +91,8 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
+
+private:
+
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data,FEffectProperties& Props);
 };
